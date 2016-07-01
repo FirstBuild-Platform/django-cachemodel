@@ -6,7 +6,7 @@ from cachemodel.utils import generate_cache_key
 
 class CacheModelManager(models.Manager):
     def get(self, **kwargs):
-        key = generate_cache_key([self.model.__name__, "get"], **kwargs)
+        key = generate_cache_key([self.model.__name__, self.model.model_version, "get"], **kwargs)
         obj = cache.get(key)
         if obj is None:
             obj = super(CacheModelManager, self).get(**kwargs)
@@ -16,7 +16,7 @@ class CacheModelManager(models.Manager):
         return obj
 
     def get_or_create(self, **kwargs):
-        key = generate_cache_key([self.model.__name__, "get"], **kwargs)
+        key = generate_cache_key([self.model.__name__, self.model.model_version, "get"], **kwargs)
         obj = cache.get(key)
         if obj is None:
             return super(CacheModelManager, self).get_or_create(**kwargs)
@@ -39,7 +39,7 @@ class CachedTableManager(models.Manager):
                 self._rebuild_index(field.name)
 
     def _rebuild_index(self, field_name):
-        cache_key = generate_cache_key([self.model.__name__, "table"], field_name)
+        cache_key = generate_cache_key([self.model.__name__, self.model.model_version, "table"], field_name)
         table = {}
         for obj in super(CachedTableManager, self).all().select_related():
             key = getattr(obj, field_name, None)
@@ -49,7 +49,7 @@ class CachedTableManager(models.Manager):
         return table
 
     def _fetch_index(self, field_name):
-        cache_key = generate_cache_key([self.model.__name__, "table"], field_name)
+        cache_key = generate_cache_key([self.model.__name__, self.model.model_version, "table"], field_name)
         table = cache.get(cache_key)
         if table is None:
             table = self._rebuild_index(field_name)

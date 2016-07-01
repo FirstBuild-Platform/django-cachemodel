@@ -27,6 +27,7 @@ class CacheModel(models.Model):
     """An abstract model that has convienence functions for dealing with caching."""
     objects = models.Manager()
     cached = CacheModelManager()
+    model_version = 1
 
     class Meta:
         abstract = True
@@ -64,7 +65,7 @@ class CacheModel(models.Model):
         kwargs = {}
         for field in args:
             kwargs[field] = getattr(self, field)
-        return generate_cache_key([self.__class__.__name__, "get"], **kwargs)
+        return generate_cache_key([self.__class__.__name__, self.model_version, "get"], **kwargs)
 
     def publish_by(self, *args):
         # cache ourselves, keyed by the fields given
@@ -85,7 +86,7 @@ class CacheModel(models.Model):
             raise AttributeError("method '%s' is not a cached_method.");
         target = getattr(method, '_cached_method_target', None)
         if callable(target):
-            key = generate_cache_key([self.__class__.__name__, target.__name__, self.pk], *args, **kwargs)
+            key = generate_cache_key([self.__class__.__name__, self.model_version, target.__name__, self.pk], *args, **kwargs)
             data = target(self, *args, **kwargs)
             cache.set(key, data, CACHE_FOREVER_TIMEOUT)
 
