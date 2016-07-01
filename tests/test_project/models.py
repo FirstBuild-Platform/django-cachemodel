@@ -24,8 +24,8 @@ class Author(cachemodel.CacheModel):
     def num_posts(self):
         return self.post_set.all().count()
 
-    def publish(self):
-        super(Author, self).publish()
+    def publish_to_cache(self):
+        super(Author, self).publish_to_cache()
         self.publish_by('first_name','last_name')
 
 
@@ -38,9 +38,9 @@ class Post(cachemodel.CacheModel):
     # category = models.ForeignKey(Category)
 
     # this is to test a child model triggering publishing/denormalizing on a parent
-    def publish(self):
-        super(Post, self).publish()
-        self.author.publish()
+    def publish_to_cache(self):
+        super(Post, self).publish_to_cache()
+        self.author.publish_to_cache()
 
     # this is so we can test @denormalized_field
     @cachemodel.denormalized_field('popularity')
@@ -62,9 +62,9 @@ class Comment(cachemodel.CacheModel):
     created_at = models.DateTimeField(default=datetime.datetime.now)
 
     # this is to test a child model triggering publishing/denormalizing on a parent
-    def publish(self):
-        super(Comment, self).publish()
-        self.post.publish()
+    def publish_to_cache(self):
+        super(Comment, self).publish_to_cache()
+        self.post.publish_to_cache()
 
     # this is to test @cached_method with no parens
     @cachemodel.cached_method
