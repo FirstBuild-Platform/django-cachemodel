@@ -132,6 +132,10 @@ class CacheModelTestCase(TestCase):
             self.assertEqual(new_foo.name, new_name)
 
 
+    def test_works_with_deferred(self):
+        """Load a deferred object and verify it saves"""
+        user = Author(first_name='Foo', last_name='foo').save()
+        user = Author.objects.all().only('first_name')
 
-
+        user[0].save()
 

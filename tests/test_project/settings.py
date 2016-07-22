@@ -1,5 +1,11 @@
 # Django settings for test_project project.
 
+import os
+import sys
+
+PROJECT_ROOT = os.path.realpath(os.path.dirname(__file__) + '/../..')
+sys.path.insert(0, os.path.join(PROJECT_ROOT, ''))
+
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
@@ -140,7 +146,7 @@ import logging
 import sqlparse
 class sqlformatter(logging.Formatter):
     def format(self, record):
-        if record.sql:
+        if hasattr(record, 'sql'):
             return "\n" + sqlparse.format(record.sql, reindent=True, keyword_case="upper") + "\n"
 
 LOGGING = {

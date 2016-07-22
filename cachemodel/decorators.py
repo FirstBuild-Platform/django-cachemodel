@@ -49,13 +49,16 @@ def denormalized_field(field_name):
     if callable(field_name):
         # we were used without an argument
         raise ArgumentErrror("You must pass a field name to @denormalized_field")
-        
+
     return decorator
 
 def find_fields_decorated_with(instance, property_name):
     """helper function that finds all methods decorated with property_name"""
-    non_field_attributes = set(dir(instance.__class__)) - set(instance._meta.get_all_field_names())
+    klass = instance.__class__
+    if getattr(instance, '_deferred', False):
+        klass = instance._meta.proxy_for_model
+    non_field_attributes = set(dir(klass)) - set(instance._meta.get_all_field_names())
     for m in non_field_attributes:
-        if hasattr(getattr(instance.__class__, m), property_name):
-            yield getattr(instance.__class__, m)
+        if hasattr(getattr(klass, m), property_name):
+            yield getattr(klass, m)
 
