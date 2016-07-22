@@ -134,9 +134,8 @@ class CacheModelTestCase(TestCase):
 
     def test_works_with_deferred(self):
         """Load a deferred object and verify it saves"""
-        cat = Category(name='Foo', slug='foo').save()
+        user = Author(first_name='Foo', last_name='foo').save()
+        user = Author.objects.all().only('first_name')
 
-        with self.assertNumQueries(1):
-            cat = Category.objects.all().only('name')
+        user[0].save()
 
-        cat.save()
