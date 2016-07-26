@@ -94,6 +94,7 @@ class CacheModel(models.Model):
 class CachedTable(models.Model):
     objects = models.Manager()
     cached = CachedTableManager()
+    model_version = 1
 
     class Meta:
         abstract = True
